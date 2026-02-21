@@ -1,0 +1,10 @@
+# 排除Node依赖包（部署时自动安装）
+node_modules/
+# 排除系统临时文件
+.DS_Store
+Thumbs.db
+# 排除本地数据文件（可选，想同步则删除）
+data.json
+# 排除日志/缓存文件
+*.log
+npm-debug.log*

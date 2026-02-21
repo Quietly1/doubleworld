@@ -1,0 +1,474 @@
+/* 全局初始化 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* 平滑滚动 */
+html {
+    scroll-behavior: smooth;
+}
+
+/* 页面主体 */
+body {
+    background: #0A0A0F;
+    color: #EAEAEA;
+    font-family: sans-serif;
+    overflow-x: hidden;
+}
+
+/* 居中容器 */
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* 主题色 */
+:root {
+    --cyan: #00F0FF;
+    --border: #222230;
+    --card: #121218;
+}
+
+/*--------------------------*/
+/* 鼠标光点 */
+/*--------------------------*/
+.light {
+    position: fixed;
+    width: 15px;
+    height: 15px;
+    background: #00F0FF;
+    border-radius: 50%;
+    box-shadow: 0 0 20px #00F0FF;
+    pointer-events: none;
+    z-index: 9999;
+    transition: 0.05s;
+}
+
+/*--------------------------*/
+/* 滚动进度条 */
+/*--------------------------*/
+.progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 2px;
+    background: var(--cyan);
+    width: 0%;
+    z-index: 999;
+}
+
+/*--------------------------*/
+/* 首屏 */
+/*--------------------------*/
+.hero {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 0 20px;
+}
+.hero h1 {
+    font-size: 42px;
+    color: #fff;
+    text-shadow: 0 0 12px var(--cyan);
+    margin: 10px 0;
+}
+.hero p {
+    color: #ccc;
+    margin-bottom: 20px;
+}
+.hero button {
+    padding: 10px 26px;
+    background: transparent;
+    border: 1px solid var(--cyan);
+    color: var(--cyan);
+    cursor: pointer;
+    transition: 0.3s;
+}
+.hero button:hover {
+    background: var(--cyan);
+    color: #000;
+}
+
+/*--------------------------*/
+/* 关于我 & 发光头像 */
+/*--------------------------*/
+.about {
+    padding: 70px 0;
+}
+.section-title {
+    text-align: center;
+    color: var(--cyan);
+    font-size: 22px;
+    margin-bottom: 40px;
+}
+.about-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 圆形头像 + 旋转光环 */
+.about-left {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    overflow: hidden;
+}
+.about-left::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    background: conic-gradient(#00F0FF, #FFFFFF, #00F0FF);
+    z-index: -1;
+    animation: avatarRotate 6s linear infinite;
+}
+@keyframes avatarRotate {
+    100% { transform: rotate(360deg); }
+}
+
+.about-right {
+    max-width: 500px;
+    line-height: 1.8;
+    text-align: center;
+}
+
+/*--------------------------*/
+/* 分类卡片 */
+/*--------------------------*/
+.categories {
+    padding: 70px 0;
+}
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+.card {
+    background: var(--card);
+    padding: 25px;
+    text-align: center;
+    border: 1px solid var(--border);
+    transition: 0.3s;
+}
+.card:hover {
+    border-color: var(--cyan);
+    transform: translateY(-4px);
+}
+.card h3 {
+    color: var(--cyan);
+}
+
+/*--------------------------*/
+/* 文章列表 */
+/*--------------------------*/
+.posts {
+    padding: 70px 0;
+}
+.post-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+.post-item {
+    background: var(--card);
+    padding: 20px;
+    border: 1px solid var(--border);
+    transition: 0.3s;
+}
+.post-item:hover {
+    border-color: var(--cyan);
+    transform: translateY(-4px);
+}
+
+/*--------------------------*/
+/* 底部 */
+/*--------------------------*/
+footer {
+    text-align: center;
+    padding: 30px 0;
+    border-top: 1px solid var(--border);
+    color: #888;
+}
+/* 原有样式不变，新增以下样式 */
+/* 文章图片容器 */
+.post-img {
+    width: 100%;
+    height: 180px;
+    border-radius: 4px;
+    background-size: cover;
+    background-position: center;
+    margin-bottom: 10px;
+}
+
+/* 文章分类标签 */
+.post-category {
+    color: var(--cyan);
+    font-size: 12px;
+    margin: 5px 0;
+}
+
+/* 文章日期 */
+.date {
+    color: #888;
+    font-size: 12px;
+    margin: 5px 0;
+}
+
+/* 文章内容间距 */
+.post-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* 响应式适配（可选） */
+@media (max-width: 768px) {
+    .post-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+    .card-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+@media (max-width: 480px) {
+    .post-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+/* 重置样式（解决浏览器兼容） */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* 响应式布局 */
+@media (max-width: 768px) {
+  /* 移动端卡片改为1列 */
+  .card-grid, .post-grid {
+    grid-template-columns: 1fr !important;
+    gap: 15px !important;
+  }
+  /* 首屏标题字体缩小 */
+  .type-title {
+    font-size: 28px !important;
+  }
+  /* 移动端按钮适配 */
+  .btn {
+    padding: 8px 16px !important;
+    font-size: 14px !important;
+  }
+}
+
+/* 分类卡片选中样式增强 */
+.category-card.active {
+  border-color: #409eff !important;
+  background-color: #e6f7ff !important;
+  color: #409eff !important;
+  font-weight: bold;
+}
+
+/* 图片加载兜底样式 */
+.post-item, .about-left {
+  background-size: cover;
+  background-position: center;
+}
+/* 图片加载失败时显示默认背景 */
+.post-item::before, .about-left::before {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-color: #f5f5f5;
+  background-image: url('./static/default-img.png') !important; /* 可自行添加默认图片 */
+  background-size: 50px;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0;
+}
+.post-item:empty::before, .about-left:empty::before {
+  opacity: 1;
+}
+
+/* 按钮点击反馈 */
+.btn {
+  transition: all 0.2s;
+  cursor: pointer;
+}
+.btn:active {
+  transform: scale(0.98);
+  background-color: #337ecc !important;
+}
+
+/* 滚动进度条兼容 */
+.progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background-color: #409eff;
+  z-index: 9999;
+}
+/*增加css样式*/
+/* 全局重置 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Microsoft Yahei", sans-serif;
+    /* 确保body占满全屏 */
+    min-height: 100vh;
+    /* 相对定位，让星空容器绝对定位生效 */
+    position: relative;
+    /* 隐藏溢出的星星（避免滚动条） */
+    overflow-x: hidden;
+    /* 文字颜色适配星空背景 */
+    color: #fff;
+}
+
+/* 星空背景 - 星星基础层 */
+.stars {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000 url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23050210"/><circle cx="10" cy="10" r="1" fill="%23fff" opacity="0.8"/><circle cx="30" cy="40" r="0.8" fill="%23fff" opacity="0.6"/><circle cx="60" cy="20" r="1.2" fill="%23fff" opacity="0.7"/><circle cx="80" cy="70" r="0.9" fill="%23fff" opacity="0.5"/><circle cx="40" cy="80" r="1" fill="%23fff" opacity="0.8"/></svg>') repeat;
+    /* 置于最底层 */
+    z-index: -2;
+    /* 星星大小缩放 */
+    background-size: 300px 300px;
+}
+
+/* 星空背景 - 闪烁的星星层 */
+.twinkling {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 200%;
+    height: 200%;
+    background: transparent url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="20" cy="20" r="0.5" fill="%23fff" opacity="0.4"/><circle cx="50" cy="50" r="0.7" fill="%23fff" opacity="0.5"/><circle cx="80" cy="30" r="0.6" fill="%23fff" opacity="0.3"/><circle cx="40" cy="70" r="0.8" fill="%23fff" opacity="0.6"/><circle cx="70" cy="80" r="0.5" fill="%23fff" opacity="0.4"/></svg>') repeat;
+    z-index: -1;
+    background-size: 200px 200px;
+    /* 闪烁+移动动画 */
+    animation: twinkle 20s linear infinite;
+}
+
+/* 星星闪烁动画 */
+@keyframes twinkle {
+    0% {
+        transform: translate(0, 0);
+        opacity: 0.2;
+    }
+    50% {
+        opacity: 0.8;
+    }
+    100% {
+        transform: translate(-50%, -50%);
+        opacity: 0.2;
+    }
+}
+
+/* 适配原有内容的样式（确保内容可见） */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.hero {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 0 20px;
+}
+
+.section-title {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.about-row {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+}
+
+.about-left {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+}
+
+.about-right {
+    font-size: 1.2rem;
+    line-height: 1.8;
+}
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+}
+
+.category-card {
+    padding: 1rem 2rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.category-card:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.posts {
+    padding: 4rem 0;
+}
+
+footer {
+    text-align: center;
+    padding: 2rem 0;
+    background: rgba(0, 0, 0, 0.5);
+    margin-top: 2rem;
+}
+
+#enterBtn {
+    margin-top: 2rem;
+    padding: 0.8rem 2rem;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid #fff;
+    color: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+#enterBtn:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
