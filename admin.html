@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>博客后台管理</title>
+    <style>
+        /* 基础样式 + 星空背景核心样式 */
+        body {
+            background: #0a0a0f;
+            color: #fff;
+            padding: 30px;
+            font-family: sans-serif;
+            min-height: 100vh;
+            /* 全屏高度 */
+            position: relative;
+            /* 让星空容器定位生效 */
+            overflow-x: hidden;
+            /* 隐藏横向滚动 */
+            margin: 0;
+            /* 清除默认边距 */
+        }
+
+        /* 星空容器 - 静态星星层 */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            /* 最底层 */
+            pointer-events: none;
+            /* 不拦截点击 */
+            background: #050210 url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23050210"/><circle cx="10" cy="10" r="1" fill="%23fff" opacity="0.8"/><circle cx="30" cy="40" r="0.8" fill="%23fff" opacity="0.6"/><circle cx="60" cy="20" r="1.2" fill="%23fff" opacity="0.7"/><circle cx="80" cy="70" r="0.9" fill="%23fff" opacity="0.5"/><circle cx="40" cy="80" r="1" fill="%23fff" opacity="0.8"/></svg>') repeat;
+            background-size: 300px 300px;
+        }
+
+        /* 星空容器 - 闪烁星星层 */
+        .twinkling {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            /* 静态星星上层 */
+            pointer-events: none;
+            /* 不拦截点击 */
+            background: transparent url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="20" cy="20" r="0.5" fill="%23fff" opacity="0.4"/><circle cx="50" cy="50" r="0.7" fill="%23fff" opacity="0.5"/><circle cx="80" cy="30" r="0.6" fill="%23fff" opacity="0.3"/><circle cx="40" cy="70" r="0.8" fill="%23fff" opacity="0.6"/><circle cx="70" cy="80" r="0.5" fill="%23fff" opacity="0.4"/></svg>') repeat;
+            background-size: 200px 200px;
+            animation: twinkle 25s linear infinite;
+        }
+
+        /* 星星闪烁动画 */
+        @keyframes twinkle {
+            0% {
+                transform: translate(30 30);
+                opacity: 0.2;
+            }
+
+            50% {
+                opacity: 0.9;
+            }
+
+            100% {
+                transform: translate(30%, 30%);
+                opacity: 0.5;
+            }
+        }
+
+        /* 表单元素样式（适配星空） */
+        input,
+        textarea {
+            width: 100%;
+            margin: 8px 0;
+            padding: 10px;
+            background: rgba(18, 18, 24, 0.85);
+            /* 半透明 */
+            border: 1px solid #333;
+            color: #fff;
+            border-radius: 4px;
+            backdrop-filter: blur(2px);
+            /* 毛玻璃效果 */
+        }
+
+        button {
+            background: #00f0ff;
+            color: #000;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 6px;
+            transition: background 0.3s;
+            /*  hover过渡 */
+        }
+
+        button:hover {
+            background: #00d8e6;
+            /* 鼠标悬浮高亮 */
+        }
+
+        .item {
+            background: rgba(18, 18, 24, 0.85);
+            /* 半透明 */
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+            backdrop-filter: blur(2px);
+            /* 毛玻璃效果 */
+        }
+
+        #login {
+            max-width: 350px;
+            margin: 0 auto 30px;
+            background: rgba(18, 18, 24, 0.9);
+            /* 登录框更不透明 */
+            padding: 20px;
+            border-radius: 8px;
+            backdrop-filter: blur(5px);
+        }
+
+        #admin {
+            display: none;
+            background: rgba(18, 18, 24, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .img-preview {
+            width: 150px;
+            height: 100px;
+            border: 1px dashed #333;
+            margin: 8px 0;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #888;
+            background-color: rgba(18, 18, 24, 0.5);
+            /* 预览框半透明 */
+        }
+
+        .category-select {
+            width: 100%;
+            margin: 8px 0;
+            padding: 10px;
+            background: rgba(18, 18, 24, 0.85);
+            /* 半透明 */
+            border: 1px solid #333;
+            color: #fff;
+            border-radius: 4px;
+            backdrop-filter: blur(2px);
+            /* 毛玻璃效果 */
+
+        }
+
+
+
+        /* ////// */
+        /* 自定义删除确认弹窗 */
+        .del-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .del-modal.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .del-modal-content {
+            background: rgba(18, 18, 24, 0.95);
+            border-radius: 8px;
+            padding: 25px;
+            width: 90%;
+            max-width: 400px;
+            backdrop-filter: blur(8px);
+            border: 1px solid #333;
+            text-align: center;
+        }
+
+        .del-modal h3 {
+            margin: 0 0 15px;
+            color: #fff;
+        }
+
+        .del-modal-btns {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .del-modal-btn {
+            padding: 8px 20px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .del-confirm {
+            background: #ff4444;
+            color: #fff;
+        }
+
+        .del-confirm:hover {
+            background: #cc0000;
+        }
+
+        .del-cancel {
+            background: #666;
+            color: #fff;
+        }
+
+        .del-cancel:hover {
+            background: #444;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 新增：星空背景容器（放在body最顶部） -->
+    <div class="stars"></div>
+    <div class="twinkling"></div>
+
+    <!-- 原有登录框 -->
+    <div id="login">
+        <h2>后台登录</h2>
+        <input id="pwd" placeholder="请输入密码" type="password">
+        <button onclick="login()">登录</button>
+    </div>
+
+    <!-- 原有管理区 -->
+    <div id="admin">
+        <h1>📝 吴琼双 · 博客管理</h1>
+        <input id="id" type="hidden">
+        <input id="title" placeholder="文章标题">
+        <input id="intro" placeholder="简介">
+        <!-- 新增分类选择 -->
+        <select id="category" class="category-select">
+            <option value="生活日常">生活日常</option>
+            <option value="旅游游记">旅游游记</option>
+            <option value="美食分享">美食分享</option>
+            <option value="开心一刻">开心一刻</option>
+        </select>
+        <!-- 新增文章图片上传 -->
+        <div>
+            <h4>文章图片</h4>
+            <input type="file" id="postImg" accept="image/*">
+            <div class="img-preview" id="imgPreview">暂无图片</div>
+        </div>
+        <button onclick="save()">保存文章</button>
+        <button onclick="clearForm()">清空</button>
+        <hr><br>
+        <h3>上传头像</h3>
+        <input type="file" id="avatar" accept="image/*">
+        <button onclick="uploadAvatar()">上传头像</button>
+        <hr><br>
+        <h3>文章列表</h3>
+        <div id="list"></div>
+
+        <!-- ////// -->
+        <!-- 自定义删除确认弹窗 -->
+        <div class="del-modal" id="delModal">
+            <div class="del-modal-content">
+                <h3>确认删除这篇文章吗？</h3>
+                <p style="color:#ccc;">删除后将无法恢复，请谨慎操作！</p>
+                <div class="del-modal-btns">
+                    <button class="del-modal-btn del-cancel" onclick="hideDelModal()">取消</button>
+                    <button class="del-modal-btn del-confirm" onclick="confirmDelete()">确认删除</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 默认密码：123456
+        function login() {
+            const p = document.getElementById('pwd').value;
+            if (p === '123456') {
+                document.getElementById('login').style.display = 'none';
+                document.getElementById('admin').style.display = 'block';
+                loadList();
+            } else {
+                alert('密码错误');
+            }
+        }
+
+        // 预览文章图片
+        document.getElementById('postImg').addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            const preview = document.getElementById('imgPreview');
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function () {
+                    preview.style.backgroundImage = `url(${reader.result})`;
+                    preview.textContent = '';
+                }
+                reader.readAsDataURL(file);
+            } else {
+                preview.style.backgroundImage = '';
+                preview.textContent = '暂无图片';
+            }
+        });
+
+        // 上传文章图片（单独接口）
+        async function uploadPostImg(file) {
+            if (!file) return '';
+            const form = new FormData();
+            form.append('postImg', file);
+            const res = await fetch('/uploadPostImg', {
+                method: 'POST',
+                body: form
+            });
+            return await res.text(); // 返回图片路径
+        }
+
+        // 加载文章
+        async function loadList() {
+            const r = await fetch('/data.json');
+            const d = await r.json();
+            const list = document.getElementById('list');
+            list.innerHTML = '';
+            d.posts.forEach(p => {
+                list.innerHTML += `
+            <div class="item">
+                <h4>${p.title}</h4>
+                <p>分类：${p.category}</p>
+                <p>${p.date}</p>
+                <button onclick="edit(${p.id})">编辑</button>
+                <button onclick="del(${p.id})">删除</button>
+            </div>`;
+            });
+        }
+
+        // 保存/新增
+        async function save() {
+            const id = document.getElementById('id').value || Date.now();
+            const title = document.getElementById('title').value;
+            const intro = document.getElementById('intro').value;
+            const category = document.getElementById('category').value;
+            const date = new Date().toLocaleDateString();
+            const postImgFile = document.getElementById('postImg').files[0];
+
+            // 上传文章图片（如果有）
+            let imgUrl = '';
+            if (postImgFile) {
+                imgUrl = await uploadPostImg(postImgFile);
+            }
+
+            const res = await fetch('/data.json');
+            const data = await res.json();
+
+            const index = data.posts.findIndex(x => x.id == id);
+            if (index >= 0) {
+                // 编辑时保留原有图片（如果没上传新图）
+                data.posts[index] = {
+                    id,
+                    title,
+                    intro,
+                    date,
+                    category,
+                    imgUrl: imgUrl || data.posts[index].imgUrl
+                };
+            } else {
+                data.posts.unshift({ id, title, intro, date, category, imgUrl });
+            }
+
+            await fetch('/save', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            alert('保存成功');
+            clearForm();
+            loadList();
+        }
+
+        // 编辑
+        async function edit(id) {
+            const r = await fetch('/data.json');
+            const d = await r.json();
+            const item = d.posts.find(x => x.id == id);
+            document.getElementById('id').value = item.id;
+            document.getElementById('title').value = item.title;
+            document.getElementById('intro').value = item.intro;
+            document.getElementById('category').value = item.category;
+
+            // 预览原有图片
+            const preview = document.getElementById('imgPreview');
+            if (item.imgUrl) {
+                preview.style.backgroundImage = `url(${item.imgUrl})`;
+                preview.textContent = '';
+            } else {
+                preview.style.backgroundImage = '';
+                preview.textContent = '暂无图片';
+            }
+        }
+
+        // 删除
+        // async function del(id) {
+        //     if (!confirm('确定删除？')) return;
+        //     const r = await fetch('/data.json');
+        //     const d = await r.json();
+        //     d.posts = d.posts.filter(x => x.id != id);
+        //     await fetch('/save', {
+        //         method: 'POST',
+        //         headers: { 'Content-Type': 'application/json' },
+        //         body: JSON.stringify(d)
+        //     });
+        //     loadList();
+        // }
+
+
+        //////
+        // 全局变量存储当前要删除的文章ID
+        let currentDelId = null;
+
+        // 显示删除弹窗（替换原有del函数）
+        function del(id) {
+            currentDelId = id; // 缓存要删除的ID
+            // 先检查弹窗是否存在，不存在则创建
+            let delModal = document.getElementById('delModal');
+            if (!delModal) {
+                // 动态创建弹窗DOM
+                delModal = document.createElement('div');
+                delModal.id = 'delModal';
+                delModal.className = 'del-modal';
+                delModal.innerHTML = `
+            <div class="del-modal-content">
+                <h3>确认删除这篇文章吗？</h3>
+                <p style="color:#ccc;">删除后将无法恢复，请谨慎操作！</p>
+                <div class="del-modal-btns">
+                    <button class="del-modal-btn del-cancel" onclick="hideDelModal()">取消</button>
+                    <button class="del-modal-btn del-confirm" onclick="confirmDelete()">确认删除</button>
+                </div>
+            </div>
+        `;
+                document.body.appendChild(delModal);
+            }
+            // 显示弹窗
+            delModal.classList.add('show');
+        }
+
+        // 隐藏删除弹窗
+        function hideDelModal() {
+            const delModal = document.getElementById('delModal');
+            if (delModal) delModal.classList.remove('show');
+            currentDelId = null; // 清空缓存ID
+        }
+
+        // 确认删除操作（核心删除逻辑）
+        async function confirmDelete() {
+            if (!currentDelId) return;
+
+            try {
+                // 读取原有数据
+                const r = await fetch('/data.json');
+                const d = await r.json();
+                // 过滤掉要删除的文章
+                d.posts = d.posts.filter(x => x.id != currentDelId);
+                // 保存修改后的数据
+                await fetch('/save', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(d)
+                });
+                // 刷新列表 + 隐藏弹窗
+                loadList();
+                hideDelModal();
+                alert('删除成功！');
+            } catch (err) {
+                console.error('删除失败:', err);
+                alert('删除失败，请重试！');
+                hideDelModal();
+            }
+        }
+
+        // 原有其他函数（login、uploadPostImg、loadList、save、edit、clearForm、uploadAvatar）保持不变
+        //////
+
+        
+        // 清空表单
+        function clearForm() {
+            document.getElementById('id').value = '';
+            document.getElementById('title').value = '';
+            document.getElementById('intro').value = '';
+            document.getElementById('category').value = '生活日常';
+            document.getElementById('postImg').value = '';
+            const preview = document.getElementById('imgPreview');
+            preview.style.backgroundImage = '';
+            preview.textContent = '暂无图片';
+        }
+
+        // 上传头像
+        async function uploadAvatar() {
+            const file = document.getElementById('avatar').files[0];
+            if (!file) return alert('请选择图片');
+            const form = new FormData();
+            form.append('avatar', file);
+            await fetch('/upload', { method: 'POST', body: form });
+            alert('头像上传成功！刷新主页查看');
+        }
+
+        // 加载文章列表
+        loadList();
+    </script>
+</body>
+
+</html>

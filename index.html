@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>吴琼双 - 生活旅游博客</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* 太阳系背景核心样式 - 增强交互版 */
+        .solar-system {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            /* 关键修改：改为完全透明 */
+            background: transparent !important;
+            /* 清除背景图（如果有） */
+            background-image: none !important;
+            z-index: -2;
+            /* 最底层，不遮挡其他内容 */
+            pointer-events: none;
+            /* 不拦截鼠标事件 */
+            overflow: hidden;
+            transition: transform 0.2s ease;
+            /* 滚动缩放过渡 */
+        }
+
+        /* 太阳样式 - 鼠标靠近会发光 */
+        .sun {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: radial-gradient(#ffd000, #ff7a00);
+            box-shadow: 0 0 40px #ff9900, 0 0 80px #ff6600;
+            z-index: 1;
+            transition: all 0.3s ease;
+            /* 发光过渡 */
+        }
+
+        /* 行星轨道通用样式 */
+        .orbit {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transition: all 0.2s ease;
+            /* 轨道缩放过渡 */
+        }
+
+        /* 行星通用样式 - 鼠标交互变化 */
+        .planet {
+            position: absolute;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            animation: orbit linear infinite;
+            transition: all 0.2s ease;
+            /* 亮度/大小过渡 */
+            box-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+        }
+
+        /* 水星轨道+行星 */
+        .orbit-mercury {
+            width: 120px;
+            height: 120px;
+        }
+
+        .mercury {
+            width: 6px;
+            height: 6px;
+            background: #8b7355;
+            animation-duration: 8s;
+            --orbit-radius: 60px;
+        }
+
+        /* 金星轨道+行星 */
+        .orbit-venus {
+            width: 160px;
+            height: 160px;
+        }
+
+        .venus {
+            width: 10px;
+            height: 10px;
+            background: #e6c79c;
+            animation-duration: 15s;
+            --orbit-radius: 80px;
+        }
+
+        /* 地球轨道+行星 */
+        .orbit-earth {
+            width: 220px;
+            height: 220px;
+        }
+
+        .earth {
+            width: 12px;
+            height: 12px;
+            background: #3498db;
+            animation-duration: 20s;
+            --orbit-radius: 110px;
+        }
+
+        /* 火星轨道+行星 */
+        .orbit-mars {
+            width: 280px;
+            height: 280px;
+        }
+
+        .mars {
+            width: 8px;
+            height: 8px;
+            background: #e74c3c;
+            animation-duration: 28s;
+            --orbit-radius: 140px;
+        }
+
+        /* 木星轨道+行星（新增更大的行星增强效果） */
+        .orbit-jupiter {
+            width: 360px;
+            height: 360px;
+        }
+
+        .jupiter {
+            width: 20px;
+            height: 20px;
+            background: #e67e22;
+            animation-duration: 40s;
+            --orbit-radius: 180px;
+        }
+
+        /* 公转动画 */
+        @keyframes orbit {
+            from {
+                transform: rotate(0deg) translateX(var(--orbit-radius)) rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg) translateX(var(--orbit-radius)) rotate(-360deg);
+            }
+        }
+
+        /* 适配移动端 */
+        @media (max-width: 768px) {
+            .sun {
+                width: 50px;
+                height: 50px;
+            }
+
+            .orbit-mercury {
+                width: 80px;
+                height: 80px;
+            }
+
+            .mercury {
+                --orbit-radius: 40px;
+            }
+
+            .orbit-venus {
+                width: 120px;
+                height: 120px;
+            }
+
+            .venus {
+                --orbit-radius: 60px;
+            }
+
+            .orbit-earth {
+                width: 160px;
+                height: 160px;
+            }
+
+            .earth {
+                --orbit-radius: 80px;
+            }
+
+            .orbit-mars {
+                width: 200px;
+                height: 200px;
+            }
+
+            .mars {
+                --orbit-radius: 100px;
+            }
+
+            .orbit-jupiter {
+                width: 280px;
+                height: 280px;
+            }
+
+            .jupiter {
+                --orbit-radius: 140px;
+            }
+        }
+
+        /* 保留原有样式不冲突 */
+        .light {
+            pointer-events: none;
+        }
+
+        .progress {
+            pointer-events: none;
+        }
+
+        .footer {
+            background: transparent !important;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 太阳系背景容器（替换原有星空） -->
+    <div class="solar-system" id="solarSystem">
+        <div class="sun" id="sun"></div>
+        <!-- 水星 -->
+        <div class="orbit orbit-mercury">
+            <div class="planet mercury"></div>
+        </div>
+        <!-- 金星 -->
+        <div class="orbit orbit-venus">
+            <div class="planet venus"></div>
+        </div>
+        <!-- 地球 -->
+        <div class="orbit orbit-earth">
+            <div class="planet earth"></div>
+        </div>
+        <!-- 火星 -->
+        <div class="orbit orbit-mars">
+            <div class="planet mars"></div>
+        </div>
+        <!-- 木星（新增增强交互效果） -->
+        <div class="orbit orbit-jupiter">
+            <div class="planet jupiter"></div>
+        </div>
+    </div>
+
+    <!-- 原有功能：鼠标跟随光点 -->
+    <div class="light"></div>
+    <!-- 原有功能：滚动进度条 -->
+    <div class="progress"></div>
+
+    <!-- 首屏 -->
+    <section class="hero">
+        <small id="type-small">INITIALIZING…</small>
+        <h1 id="type-title">欢迎来到我的星空</h1>
+        <p id="type-desc">生活 · 旅游 · 日常 · 开心一刻</p>
+        <button id="enterBtn">进入主页</button>
+    </section>
+
+    <!-- 关于我 -->
+    <section class="about" id="about">
+        <div class="container">
+            <h2 class="section-title">[ 关于我 ]</h2>
+            <div class="about-row">
+                <div class="about-left" style="background-image: url('avatar.jpg');"></div>
+                <div class="about-right">
+                    你好，我是吴琼双<br>
+                    热爱生活、喜欢旅行、记录日常<br>
+                    用温柔与真诚，分享每一个开心瞬间
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 分类 -->
+    <section class="categories">
+        <div class="container">
+            <h2 class="section-title">[ 博客分类 ]</h2>
+            <div class="card-grid">
+                <div class="category-card" data-category="生活日常">生活日常</div>
+                <div class="category-card" data-category="旅游游记">旅游游记</div>
+                <div class="category-card" data-category="美食分享">美食分享</div>
+                <div class="category-card" data-category="开心一刻">开心一刻</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 文章列表 -->
+    <section class="posts">
+        <div class="container">
+            <h2 class="section-title">[ 最新日记 ]</h2>
+            <div class="post-grid" id="postList"></div>
+        </div>
+    </section>
+
+    <footer>© 2026 吴琼双 · 生活·旅游·日常·开心一刻</footer>
+
+    <script src="script.js"></script>
+    <script>
+        // 太阳系交互核心逻辑
+        const solarSystem = document.getElementById('solarSystem');
+        const sun = document.getElementById('sun');
+        const planets = document.querySelectorAll('.planet');
+        const orbits = document.querySelectorAll('.orbit');
+        const body = document.body;
+
+        // 1. 鼠标移动：行星亮度/大小变化 + 太阳发光强度变化 + 太阳系轻微跟随鼠标
+        body.addEventListener('mousemove', (e) => {
+            // 获取鼠标位置（相对视口）
+            const mouseX = e.clientX / window.innerWidth;
+            const mouseY = e.clientY / window.innerHeight;
+
+            // 太阳系整体轻微跟随鼠标（偏移范围：-15px ~ 15px）
+            const offsetX = (mouseX - 0.5) * 30;
+            const offsetY = (mouseY - 0.5) * 30;
+            solarSystem.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+
+            // 太阳发光强度随鼠标距离变化（鼠标越靠近中心，太阳越亮）
+            const distanceFromCenter = Math.hypot(mouseX - 0.5, mouseY - 0.5);
+            const sunGlow = 40 + (1 - distanceFromCenter) * 60; // 发光范围 40~100px
+            sun.style.boxShadow = `0 0 ${sunGlow}px #ff9900, 0 0 ${sunGlow * 2}px #ff6600`;
+
+            // 行星亮度/大小随鼠标位置变化
+            planets.forEach((planet, index) => {
+                // 不同行星有不同的亮度/大小变化幅度
+                const brightness = 0.3 + mouseX * 1.2; // 亮度 0.3~1.5
+                const scale = 1 + (mouseY * 0.4); // 大小 1~1.4倍
+                planet.style.opacity = brightness;
+                planet.style.transform = `translate(-50%, -50%) scale(${scale})`;
+                // 行星阴影随鼠标变化
+                planet.style.boxShadow = `0 0 ${8 + mouseX * 10}px rgba(255,255,255,${brightness})`;
+            });
+        });
+
+        // 2. 滚动页面：太阳系整体缩放 + 轨道透明度变化
+        window.addEventListener('scroll', () => {
+            // 获取滚动进度（0~1）
+            const scrollProgress = window.scrollY / (document.body.scrollHeight - window.innerHeight);
+
+            // 太阳系缩放：滚动越多，太阳系越小（0.8~1倍）
+            const scale = 1 - scrollProgress * 0.2;
+            solarSystem.style.transform = `scale(${scale})`;
+
+            // 轨道透明度：滚动越多，轨道越明显
+            orbits.forEach(orbit => {
+                orbit.style.opacity = 0.2 + scrollProgress * 0.8; // 透明度 0.2~1
+            });
+
+            // 行星公转速度：滚动时轻微加速/减速
+            planets.forEach((planet, index) => {
+                const baseDuration = parseFloat(planet.style.animationDuration);
+                const newDuration = baseDuration - scrollProgress * 5; // 最多加速5秒
+                planet.style.animationDuration = `${Math.max(newDuration, 3)}s`; // 最小3秒
+            });
+        });
+
+        // 3. 鼠标滚轮（非滚动页面时）：太阳系局部缩放
+        body.addEventListener('wheel', (e) => {
+            // 只在鼠标悬停在非内容区时触发（可选）
+            if (e.target === body || e.target === solarSystem) {
+                e.preventDefault(); // 阻止页面滚动
+                const currentScale = parseFloat(solarSystem.style.transform.match(/scale\(([^)]+)\)/)?.[1] || 1);
+                const newScale = currentScale + (e.deltaY > 0 ? -0.1 : 0.1);
+                // 限制缩放范围 0.5~1.5倍
+                solarSystem.style.transform = `scale(${Math.max(0.5, Math.min(1.5, newScale))})`;
+            }
+        }, { passive: false });
+
+        // 4. 鼠标点击：行星短暂闪烁效果
+        body.addEventListener('click', () => {
+            planets.forEach(planet => {
+                // 闪烁动画
+                planet.style.opacity = 1.5;
+                planet.style.transform = 'translate(-50%, -50%) scale(1.8)';
+                setTimeout(() => {
+                    planet.style.opacity = '';
+                    planet.style.transform = '';
+                }, 300);
+            });
+            // 太阳短暂爆闪
+            sun.style.boxShadow = '0 0 150px #ff9900, 0 0 300px #ff6600';
+            setTimeout(() => {
+                sun.style.boxShadow = '';
+            }, 500);
+        });
+    </script>
+</body>
+
+</html>
